@@ -1,14 +1,16 @@
 # Docker
 
-## Docker Images
+## Docker Basic Commands
+
+---
+
+### Docker Images
 
 ```shell
 docker images # list of docker images
-
-
 ```
 
-## Docker Container
+### Docker Container
 
 ```shell
 docker ps # see the list of all running containers
@@ -27,7 +29,7 @@ docker stop <container id or name>
 
 ```
 
-## Docker pull
+### Docker pull - push
 
 ```shell
 docker pull <image name> 
@@ -35,16 +37,18 @@ docker pull <image name>
 docker pull <image name>:<build version> # pull a specific version
 # default build: latest
 
+docker push <registryname>/<username>/<imagename>:<tag>
+
 ```
 
-## Docker exec
+### Docker exec
 
 ```shell
 docker exec -it <container name> <command>
 e.g.: docker exec -it my-nginx bash
 ```
 
-## Docker logs
+### Docker logs
 
 ```shell
 docker logs <container name>
@@ -57,13 +61,13 @@ docker logs --timestamps <container name> # show timestamps
 
 ```
 
-## Docker Tag
+### Docker Tag
 
 ```shell
 docker tag <image-name>:<current-tag> <image-name>:<new-tag>
 ```
 
-## Docker Network
+### Docker Network
 
 ```shell
 docker network ls # list all networks
@@ -74,3 +78,82 @@ docker network disconnect <network name> <container name> # disconnect a contain
 docker run -d --network <network name> -p bind-port:container-port <image-name> # run a container in a specific network
 
 ```
+#
+
+---
+
+## Dockerfile Instructions
+
+## Dockerfile
+
+Basic Dockerfile instructions:
+
+- `FROM` \- base image.
+- `ARG` \- build-time variable.
+- `ENV` \- environment variable.
+- `LABEL` \- image metadata.
+- `WORKDIR` \- set working directory.
+- `COPY` / `ADD` \- copy files into image (`COPY` preferred).
+- `RUN` \- run commands during build.
+- `EXPOSE` \- document container ports.
+- `VOLUME` \- declare mount points.
+- `USER` \- set runtime user.
+- `ENTRYPOINT` \- fixed entrypoint for the container.
+- `CMD` \- default command or arguments.
+- `HEALTHCHECK` \- probe container health.
+- `ONBUILD` \- trigger when used as a base image.
+- `STOPSIGNAL` \- signal to stop container.
+- `SHELL` \- change default shell for RUN commands.
+
+Minimal example:
+
+```dockerfile
+FROM node:20-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+COPY . .
+EXPOSE 3000
+ENV NODE_ENV=production
+USER node
+CMD ["node", "server.js"]
+```
+
+## Docker Volume
+
+## Docker Volume
+
+Docker supports two main ways to persist container data: named *volumes* and *bind mounts*.
+
+1. Named volumes
+    - Managed by Docker and stored on the Docker host (commonly at `/var/lib/docker/volumes`).
+    - Lifecycle is decoupled from containers (volumes persist after container removal).
+    - Portable between hosts only via explicit export/import or by using the same host.
+    - Good for production data, backups, and sharing data between containers.
+
+2. Bind mounts
+    - Map a host filesystem path into the container (e.g., `/host/path:/container/path`).
+    - Container sees the exact host files and permissions.
+    - Useful for development, editing files on the host, or accessing host-specific data.
+    - Less portable and can introduce host-specific permission/SELinux issues.
+
+Common commands and examples:
+
+```bash
+# create a named volume
+docker volume create mydata
+
+# run container with named volume
+docker run -d --name app -v mydata:/app/data myimage
+
+# run container with bind mount
+docker run -d --name app -v /home/user/app:/app myimage
+
+# alternative using --mount (more explicit)
+docker run -d --name app --mount source=mydata,target=/app/data myimage
+
+# inspect, list, remove
+docker volume ls
+docker volume inspect mydata
+docker volume rm mydata
+docker volume prune
