@@ -126,7 +126,16 @@ USER node
 CMD ["node", "server.js"]
 ```
 
-## Docker Volume
+### Docker Copy Vs ADD
+
+Differences between `COPY` and `ADD`:
+
+1. `COPY` \- copies files and directories from the build context into the image. Simple, predictable, and preferred for most cases.
+2. `ADD` \- does everything `COPY` does plus:
+   1. can extract local compressed tar archives into the image.
+   2. can download files from remote URLs and add the fetched content.
+3. Recommendation \- use `COPY` unless you specifically need `ADD`'s extra behaviors (auto-extraction or URL fetch).
+4. Best practices \- Always use `COPY` for moving your code/config. Only use `ADD` to extract tar.gz file.
 
 ## Docker Volume
 
