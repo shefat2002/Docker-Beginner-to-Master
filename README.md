@@ -78,7 +78,14 @@ docker network disconnect <network name> <container name> # disconnect a contain
 docker run -d --network <network name> -p bind-port:container-port <image-name> # run a container in a specific network
 
 ```
-#
+
+# Docker Inspect
+
+```shell
+docker inspect <container/image/volume id or name> # inspect a container/image/volume
+docker inspect --type=<type> --format='{{.<format>}}' <id/name> 
+e.g.: docker inspect --type=container --format='{{json .Config.ExposedPorts}}' 453cefdfe984
+```
 
 ---
 
