@@ -137,6 +137,38 @@ Differences between `COPY` and `ADD`:
 3. Recommendation \- use `COPY` unless you specifically need `ADD`'s extra behaviors (auto-extraction or URL fetch).
 4. Best practices \- Always use `COPY` for moving your code/config. Only use `ADD` to extract tar.gz file.
 
+### Docker `RUN`
+`RUN` installs software, updates libraries, and creates folders.
+
+#### Layers and optimization
+Every single RUN line in your Dockerfile creates a new Image Layer.
+
+**Too Many Layers:**
+```dockerfile
+RUN apt-get update
+RUN apt-get install -y python3
+RUN apt-get install -y git
+RUN apt-get clean
+```
+Docker creates 4 separate layers.
+```text
+Layer A: The result of update.
+Layer B: Layer A + python3.
+Layer C: Layer B + git.
+Layer D: Layer C + clean.
+```
+
+
+**Optimized Layers:**
+```dockerfile
+RUN apt-get update && \
+    apt-get install -y python3 git && \
+    apt-get clean
+```
+
+
+
+
 ## Docker Volume
 
 Docker supports two main ways to persist container data: named *volumes* and *bind mounts*.
